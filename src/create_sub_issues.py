@@ -6,8 +6,8 @@ from plane_client import PlaneAPIClient
 # ==========================================
 PLANE_BASE_URL = "https://plane.confer.today"
 PLANE_WORKSPACE_SLUG = "confer-solutions-ai"
-PLANE_API_KEY = "plane_api_711fe8ee2ce24a1e86ade30311218655"
-PLANE_PROJECT_ID = "a4babd39-1f6e-4494-b494-e858e7c97582"
+PLANE_API_KEY = "plane_api_711fe8ee2ce24a1e86ade3031******"
+PLANE_PROJECT_ID = "a4babd39-1f6e-4494-b494-e858e7c*****"
 
 PARENT_ISSUE_TITLE = "NocoDB: Employee Training & Onboarding"
 
