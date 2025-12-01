@@ -13,7 +13,7 @@ PLANE_BASE_URL = "https://plane.confer.today"
 PLANE_WORKSPACE_SLUG = "confer-solutions-ai"
 
 # 3. Your Plane API Key
-PLANE_API_KEY = "plane_api_711fe8ee2ce24a1e86ade30311218655"
+PLANE_API_KEY = "plane_api_711fe8ee2ce24a1e86ade30******"
 
 # 4. The Project ID (Extracted from your URL)
 #    URL: .../projects/a4babd39-1f6e-4494-b494-e858e7c97582/issues/
