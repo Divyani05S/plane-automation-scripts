@@ -5,21 +5,19 @@ from plane_client import PlaneAPIClient
 # CONFIGURATION - REPLACE WITH YOUR VALUES
 # ==========================================
 
-# 1. Your Plane Workspace URL (e.g., https://app.plane.so or your self-hosted URL)
-#    If using the cloud version, the base API URL is usually https://api.plane.so
-PLANE_BASE_URL = "https://api.plane.so" 
+# 1. Your Plane Workspace URL
+PLANE_BASE_URL = "https://plane.confer.today"
 
 # 2. Your Plane Workspace Slug
-#    Found in your URL: https://app.plane.so/YOUR_WORKSPACE_SLUG/...
-PLANE_WORKSPACE_SLUG = "YOUR_WORKSPACE_SLUG"
+#    Found in your URL: https://plane.confer.today/confer-solutions-ai/...
+PLANE_WORKSPACE_SLUG = "confer-solutions-ai"
 
 # 3. Your Plane API Key
-#    Generate this in your Plane Profile Settings > API Tokens
-PLANE_API_KEY = "TEST_API_KEY"
+PLANE_API_KEY = "plane_api_711fe8ee2ce24a1e86ade30311218655"
 
-# 4. The Project Slug (Identifier) where you want to create issues
-#    Found in the project URL or settings (e.g., "DMOXI" or "test-project")
-PLANE_PROJECT_SLUG = "test-project-slug"
+# 4. The Project ID (Extracted from your URL)
+#    URL: .../projects/a4babd39-1f6e-4494-b494-e858e7c97582/issues/
+PLANE_PROJECT_ID = "a4babd39-1f6e-4494-b494-e858e7c97582"
 
 # ==========================================
 
@@ -34,20 +32,13 @@ def main():
     )
 
     try:
-        # Step 1: Get the Project ID
-        print(f"Looking for project: {PLANE_PROJECT_SLUG}...")
-        project_id = client.get_project_id_by_slug(PLANE_PROJECT_SLUG)
-
-        if not project_id:
-            print(f"Error: Project with slug '{PLANE_PROJECT_SLUG}' not found.")
-            print("Please check your PLANE_PROJECT_SLUG and ensure the API Key has access.")
-            return
-
-        print(f"Found Project ID: {project_id}")
+        # Step 1: Use the provided Project ID directly
+        project_id = PLANE_PROJECT_ID
+        print(f"Using Project ID: {project_id}")
 
         # Step 2: (Optional) Get State ID for 'Todo'
-        # This ensures the issue lands in the right column.
         print("Fetching project states...")
+        # Note: If 'Todo' state doesn't exist, it will default to the project's default state (usually Backlog or Todo)
         todo_state_id = client.get_state_id_by_name(project_id, "Todo")
         if todo_state_id:
             print(f"Found 'Todo' state ID: {todo_state_id}")
@@ -55,23 +46,27 @@ def main():
             print("Could not find 'Todo' state, using default.")
 
         # Step 3: Create Work Items (Issues)
-        # Based on your requirements/images
+        # Note: Priority values usually need to be lowercase (urgent, high, medium, low, none)
         issues_to_create = [
-            {
-                "title": "n8n Core Automation",
-                "description": "Implement the core automation logic for n8n.",
-                "priority": "High"
-            },
-            {
-                "title": "DMOXI-9.5 Error Handling & Notification Workflow",
-                "description": "Implement robust error handling path within the main n8n workflow.",
-                "priority": "Urgent"
-            },
-            {
-                "title": "Flowise API Node Setup",
-                "description": "Setup the API nodes for Flowise integration.",
-                "priority": "Medium"
-            }
+            {"title": "Moxie: Task Organization Verification", "description": "Audit and confirm all project tasks are correctly assigned and structured by owner/user role.", "priority": "medium"},
+            {"title": "NocoDB: Employee Data Ingestion", "description": "Populate the NocoDB database with current employee records and user details.", "priority": "medium"},
+            {"title": "NocoDB: Employee Training & Onboarding", "description": "Develop and deliver training sessions on using NocoDB for Moxie employees.", "priority": "medium"},
+            {"title": "Moxie: n8n Automation Flow Setup", "description": "Configure and deploy core automation workflows using n8n for critical business processes.", "priority": "high"},
+            {"title": "VAPI: Phone Call Integration Deployment", "description": "Integrate vAPI to handle and log phone call interactions within the system.", "priority": "high"},
+            {"title": "VAPI: Website Voice Widget Setup", "description": "Implement vAPI for the interactive voice widget feature on the company website.", "priority": "medium"},
+            {"title": "Internal Chatbot: UI & Deployment", "description": "Develop the internal AI chatbot application and deploy its web-based user interface.", "priority": "high"},
+            {"title": "Langfuse: Reporting & Analytics Delivery", "description": "Monitor Langfuse logs, generate new reports, analyze insights, and deliver findings to stakeholders.", "priority": "medium"},
+            {"title": "Website Chatbot: Maintenance & Updates", "description": "Ongoing maintenance, feature updates, and knowledge base refreshment for the website chatbot.", "priority": "low"},
+            {"title": "Anywhere Chatbot: Maintenance & Updates", "description": "Ongoing maintenance and knowledge base updates for the Anywhere platform chatbot.", "priority": "low"},
+            {"title": "Internal Chatbot: Maintenance & Updates", "description": "Ongoing maintenance and knowledge base updates for the internal web-based chatbot.", "priority": "low"},
+            {"title": "BPMN: Camunda Process Modeling", "description": "Document core business processes using BPMN standards and the Camunda modeling tool.", "priority": "medium"},
+            {"title": "Documentation: Cleanup and Structure", "description": "Standardize, consolidate, and organize existing project documentation for clarity and accessibility.", "priority": "low"},
+            {"title": "Documentation: Role & Department SOPs", "description": "Create standardized operating procedures (SOPs) and process guides tailored for specific roles and departments.", "priority": "medium"},
+            {"title": "IT: Comprehensive Backup Strategy", "description": "Design and document a robust, tested strategy for all critical IT systems and data backups.", "priority": "high"},
+            {"title": "Decision Engine / LOS Replacement (Target Feb 2026)", "description": "Planning and execution of the replacement project for the current Lending Origination System (LOS) / Decision Engine.", "priority": "high"},
+            {"title": "Vendor Review: Licensing & Cost Audit", "description": "Review all current vendor contracts, licensing, pricing, and evaluate potential replacement options.", "priority": "medium"},
+            {"title": "Jungo: Sales Reporting Refinement", "description": "Clean up and optimize sales data and reporting within the Jungo platform.", "priority": "medium"},
+            {"title": "Payment Strategy (ACH, Wells, etc.)", "description": "Define the full technical and operational payment strategy.", "priority": "high"}
         ]
 
         for issue_data in issues_to_create:

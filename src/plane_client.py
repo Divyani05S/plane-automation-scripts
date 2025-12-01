@@ -28,13 +28,19 @@ class PlaneAPIClient:
             "Content-Type": "application/json"
         }
 
-    def _handle_response(self, response: requests.Response) -> Dict[str, Any]:
+    def _handle_response(self, response: requests.Response) -> Any:
         """
         Helper method to handle API responses and errors.
         """
         try:
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            
+            # Handle pagination: if 'results' key exists, return that list
+            if isinstance(data, dict) and "results" in data:
+                return data["results"]
+            
+            return data
         except requests.exceptions.HTTPError as e:
             logger.error(f"HTTP Error: {e}")
             logger.error(f"Response Content: {response.text}")
@@ -73,7 +79,16 @@ class PlaneAPIClient:
         logger.warning(f"Project with slug '{project_slug}' not found.")
         return None
 
-    def create_issue(self, project_id: str, title: str, description: str = "", priority: str = "None", state_id: Optional[str] = None) -> Dict[str, Any]:
+    def get_issues(self, project_id: str) -> List[Dict[str, Any]]:
+        """
+        Retrieve all issues in a project.
+        """
+        endpoint = f"{self.base_url}/api/v1/workspaces/{self.workspace_slug}/projects/{project_id}/issues/"
+        logger.info(f"Fetching issues from: {endpoint}")
+        response = requests.get(endpoint, headers=self.headers)
+        return self._handle_response(response)
+
+    def create_issue(self, project_id: str, title: str, description: str = "", priority: str = "None", state_id: Optional[str] = None, parent_id: Optional[str] = None) -> Dict[str, Any]:
         """
         Create a new issue (work item) in the specified project.
 
@@ -81,9 +96,10 @@ class PlaneAPIClient:
             project_id (str): The UUID of the project.
             title (str): The title of the issue.
             description (str): The description of the issue (Markdown supported).
-            priority (str): Priority of the issue (e.g., "Urgent", "High", "Medium", "Low", "None").
+            priority (str): Priority of the issue (e.g., "urgent", "high", "medium", "low", "none").
             state_id (str, optional): The UUID of the state (e.g., "Todo", "In Progress"). 
                                       If None, uses the default state.
+            parent_id (str, optional): The UUID of the parent issue (for creating sub-issues).
 
         Returns:
             Dict[str, Any]: The created issue data.
@@ -92,14 +108,15 @@ class PlaneAPIClient:
         
         payload = {
             "name": title,
-            "description_html": description, # Plane often expects HTML or specific format, but 'description' or 'description_html' is common. 
-                                             # Note: Plane v1 API might use 'description' for raw markdown or html. 
-                                             # We will try 'name' and 'description'.
+            "description_html": description, 
             "priority": priority,
         }
         
         if state_id:
             payload["state"] = state_id
+            
+        if parent_id:
+            payload["parent"] = parent_id
 
         logger.info(f"Creating issue '{title}' in project {project_id}")
         response = requests.post(endpoint, headers=self.headers, json=payload)
